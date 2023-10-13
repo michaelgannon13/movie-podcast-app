@@ -11,6 +11,11 @@
   text-align: left;
 }
 
+.result-container {
+  background: #444444;
+  border: 1px solid #7d7d7d;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
