@@ -12,6 +12,7 @@ function App() {
     Year: string;
     Released: string;
     Plot: string;
+    Poster: string;
   }
 
 
@@ -31,6 +32,7 @@ function App() {
           throw new Error(`Network response was not ok ${response.statusText}`);
         }
         const data = await response.json();
+        console.log('data ', data)
         setMovies(data);
       } catch (error) {
         console.error('There has been a problem with your fetch operation:', error);
@@ -68,19 +70,21 @@ function App() {
           <div>
 
           {movies?.Title ? (
-              <div className="movie-card">
-              {/* <img src={movie.Poster} className="card-img-top" alt={movie.Title} /> */}
-              <div className="card-body">
-                <h5 className="card-title">{movies.Title}</h5>
-                <p className="card-text">
-                  <strong>Release Year:</strong> {movies.Year}<br />
-                  <strong>Release Date:</strong> {movies.Released}<br />
-                  <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
-                </p>
-                <button className="btn btn-primary" onClick={() => handleAddToList(movies)}>
-                  Add to List
-                </button>
-              </div>
+                <div className="movie-card d-flex flex-row mb-4">
+                <div className="movie-image flex-shrink-0 m-3">
+                    <img src={movies.Poster} alt={movies.Title} className="img-fluid" />
+                </div>
+                <div className="card-body d-flex flex-column justify-content-center">
+                    <h5 className="card-title mb-2">{movies.Title}</h5>
+                    <p className="card-text mb-2">
+                        <strong>Release Year:</strong> {movies.Year}<br />
+                        <strong>Release Date:</strong> {movies.Released}<br />
+                        <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
+                    </p>
+                    <button className="btn btn-primary" onClick={() => handleAddToList(movies)}>
+                        Add to List
+                    </button>
+                </div>
             </div>
             ) : (
               <div className="no-movies">
