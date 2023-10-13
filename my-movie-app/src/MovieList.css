@@ -1,0 +1,15 @@
+/* MovieList.css */
+.movie-list {
+  display: flex;
+  overflow-x: auto;
+}
+
+.movie-item {
+  flex: 0 0 auto;
+  margin-right: 16px;  /* Adjust the spacing between images */
+}
+
+.movie-image {
+  max-width: 100%;
+  height: auto;
+}

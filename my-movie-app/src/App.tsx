@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import MovieList from './MovieList';
+
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [movies, setMovies] = useState<Movie>();
+
+  // Check local storage for movies
+  const savedMoviesJSON = localStorage.getItem('movieList');
+  const savedMovies = savedMoviesJSON ? JSON.parse(savedMoviesJSON) : [];
+  const [movieList, setMovieList] = useState(savedMovies);
+  
+
+
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
 
   interface Movie {
@@ -21,7 +31,15 @@ function App() {
   };
 
   const handleAddToList = (movie: Movie) => {
+    const updatedMovieList = [...movieList, movie];
+    setMovieList(updatedMovieList);
+    localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
   };
+
+  // Sync movieList state with local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('movieList', JSON.stringify(movieList));
+  }, [movieList]);
 
   const handleSearchClick = async () => {
 
@@ -86,12 +104,17 @@ function App() {
                     </button>
                 </div>
             </div>
+            
             ) : (
               <div className="no-movies">
                 Sorry! There are no movies matching your search request!
               </div>
             )}
           </div>
+        </div>
+
+        <div className="listContainer">
+          <MovieList movieList={movieList} />
         </div>
       </header>
     </div>
