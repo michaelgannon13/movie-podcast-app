@@ -4,17 +4,27 @@ import './App.css';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [movies, setMovies] = useState([]);
-
+  const [movies, setMovies] = useState<Movie>();
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
+
+  interface Movie {
+    Title: string;
+    Year: string;
+    Released: string;
+    Plot: string;
+  }
 
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleAddToList = (movie: Movie) => {
+  };
+
   const handleSearchClick = async () => {
-    if (searchTerm) {
+
+    if (searchTerm !== '') {
       try {
         const response = await fetch(`https://www.omdbapi.com/?t=${searchTerm}&apikey=${apiKey}`);
         if (!response.ok) {
@@ -54,6 +64,29 @@ function App() {
                 </div>
               </div>
             </div>
+          </div>
+          <div>
+
+          {movies?.Title ? (
+              <div className="movie-card">
+              {/* <img src={movie.Poster} className="card-img-top" alt={movie.Title} /> */}
+              <div className="card-body">
+                <h5 className="card-title">{movies.Title}</h5>
+                <p className="card-text">
+                  <strong>Release Year:</strong> {movies.Year}<br />
+                  <strong>Release Date:</strong> {movies.Released}<br />
+                  <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
+                </p>
+                <button className="btn btn-primary" onClick={() => handleAddToList(movies)}>
+                  Add to List
+                </button>
+              </div>
+            </div>
+            ) : (
+              <div className="no-movies">
+                Sorry! There are no movies matching your search request!
+              </div>
+            )}
           </div>
         </div>
       </header>
