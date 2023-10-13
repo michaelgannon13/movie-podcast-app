@@ -1,17 +1,6 @@
 import './MovieList.css';
-import React, { useEffect, useState } from 'react';
-
-interface Movie {
-    Title: string;
-    Year: string;
-    Plot: string;
-    Poster: string;
-    Genre: string;
-}
-
-interface MovieListProps {
-    movieList: Movie[];
-}
+import { useEffect, useState } from 'react';
+import { MovieListProps } from './types';
 
 function MovieList({ movieList }: MovieListProps) {
 
