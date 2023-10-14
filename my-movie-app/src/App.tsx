@@ -1,7 +1,8 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import MovieList from './MovieList';
+import MovieList from './components/movies/list/MovieList';
+import Nav from './components/nav/Nav';
 import { Movie } from './types';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
   const savedMoviesJSON = localStorage.getItem('movieList');
   const savedMovies = savedMoviesJSON ? JSON.parse(savedMoviesJSON) : [];
   const [movieList, setMovieList] = useState(savedMovies);
+  const [errorMsg, setErrorMsg] = useState(false);
 
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
 
@@ -22,6 +24,9 @@ function App() {
       throw new Error(`Network response was not ok ${response.statusText}`);
     }
     const data = await response.json();
+    if (data.Error === 'Movie not found!') {
+      setErrorMsg(true);
+    }
     return data;
   };
 
@@ -59,13 +64,10 @@ function App() {
       }
     }
   };
-  
-  
-
   return (
     <div className="App">
-      <header className="App-header">
-        <div className="container">
+      <Nav />
+      <div className="container">
           <div className="row">
             <div className="col-md-6 offset-md-3">
               <div className="input-group mb-3">
@@ -76,6 +78,7 @@ function App() {
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
+              </div>
                 <div className="input-group-append">
                   <button 
                     className="btn btn-outline-secondary" 
@@ -85,7 +88,6 @@ function App() {
                     Search
                   </button>
                 </div>
-              </div>
             </div>
           </div>
 
@@ -102,24 +104,21 @@ function App() {
                           <strong>Release Date:</strong> {movies.Released}<br />
                           <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
                       </p>
-                      <button className="btn btn-primary" onClick={() => handleAddToList(movies)}>
+                      <button className="btn btn-primary add-to-list-btn" onClick={() => handleAddToList(movies)}>
                           Add to List
                       </button>
                   </div>
               </div>
-              
               ) : (
                 <div className="no-movies">
-                  Sorry! There are no movies matching your search request!
+                  {errorMsg ? <div className="no-movies">Sorry! There are no movies matching your search request!</div> : null}
                 </div>
               )}
           </div>
-        </div>
-
-        <div className="listContainer">
-          <MovieList movieList={movieList} />
-        </div>
-      </header>
+      </div>
+      <div className="listContainer">
+        <MovieList movieList={movieList} />
+      </div>
     </div>
   );
 }

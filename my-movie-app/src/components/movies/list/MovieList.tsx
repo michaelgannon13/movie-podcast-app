@@ -1,7 +1,8 @@
 // MovieList.tsx
 import './MovieList.css';
 import { useEffect, useState } from 'react';
-import { MovieListProps } from './types';
+import { MovieListProps } from '../../../types';
+import MovieRecommendation from '../recommendation/MovieList';
 
 function MovieList({ movieList }: MovieListProps) {
     const [recommendation, setRecommendation] = useState<string | null>(null);
@@ -57,13 +58,7 @@ function MovieList({ movieList }: MovieListProps) {
                 </div>
             ))}
 
-            <div className="genre-recommendation">
-                {recommendation && (
-                    <div>
-                        <p>Recommended Movie: {recommendation}</p>
-                    </div>
-                )}
-            </div>
+            <MovieRecommendation recommendation={recommendation} />
         </div>
     );
 }
