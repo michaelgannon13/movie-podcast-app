@@ -9,6 +9,11 @@
   flex: 0 0 auto;
   margin-right: 16px; 
   margin-bottom: 16px;  
+  max-width: 160px;
+}
+
+.title {
+  color: yellow;
 }
 
 .movie-image {

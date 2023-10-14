@@ -13,6 +13,7 @@ function App() {
   const savedMoviesJSON = localStorage.getItem('movieList');
   const savedMovies = savedMoviesJSON ? JSON.parse(savedMoviesJSON) : [];
   const [movieList, setMovieList] = useState(savedMovies);
+  const [fadeIn, setFadeIn] = useState(false);
 
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
 
@@ -24,7 +25,6 @@ function App() {
     const data = await response.json();
     return data;
   };
-
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -45,8 +45,14 @@ function App() {
     localStorage.setItem('movieList', JSON.stringify(movieList));
   }, [movieList]);
 
+  useEffect(() => {
+    if (movies) {
+      setFadeIn(true);  /* Trigger fade-in */
+    }
+  }, [movies]);
+
   const handleSearchClick = async () => {
-    if (searchTerm !== '') {
+
       if (apiKey) { 
         try {
           const data = await fetchMovie(searchTerm, apiKey);
@@ -57,15 +63,15 @@ function App() {
       } else {
         setError('API key is not defined');
       }
-    }
+    setFadeIn(true);
   };
-  
-  
 
   return (
     <div className="App">
       <header className="App-header">
-        <div className="container">
+      </header>
+
+      <div className="container">
           <div className="row">
             <div className="col-md-6 offset-md-3">
               <div className="input-group mb-3">
@@ -78,7 +84,7 @@ function App() {
                 />
                 <div className="input-group-append">
                   <button 
-                    className="btn btn-outline-secondary" 
+                    className="btn btn-primary" 
                     type="button"
                     onClick={handleSearchClick}
                   >
@@ -89,37 +95,39 @@ function App() {
             </div>
           </div>
 
-          <div className='result-container'>
-            {movies?.Title ? (
-                  <div className="movie-card d-flex flex-row mb-4">
-                  <div className="movie-image flex-shrink-0 m-3">
-                      <img src={movies.Poster} alt={movies.Title} className="img-fluid" />
-                  </div>
-                  <div className="card-body d-flex flex-column justify-content-center">
-                      <h5 className="card-title mb-2">{movies.Title}</h5>
-                      <p className="card-text mb-2">
-                          <strong>Release Year:</strong> {movies.Year}<br />
-                          <strong>Release Date:</strong> {movies.Released}<br />
-                          <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
-                      </p>
-                      <button className="btn btn-primary" onClick={() => handleAddToList(movies)}>
-                          Add to List
-                      </button>
-                  </div>
-              </div>
-              
-              ) : (
-                <div className="no-movies">
-                  Sorry! There are no movies matching your search request!
-                </div>
-              )}
-          </div>
-        </div>
 
+          <div className={`result-container ${fadeIn ? 'fade-in' : ''}`}>
+
+              {movies?.Title ? (
+                    <div className="movie-card d-flex flex-row mb-4">
+                    <div className="movie-image flex-shrink-0 m-3">
+                        <img src={movies.Poster} alt={movies.Title} className="img-fluid" />
+                    </div>
+                    <div className="card-body d-flex flex-column justify-content-center">
+                        <h2 className="card-title mb-2">{movies.Title}</h2>
+                        <p className="card-text mb-2">
+                            <strong>Release Year:</strong> {movies.Year}<br />
+                            <strong>Release Date:</strong> {movies.Released}<br />
+                            <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
+                        </p>
+                        <button className="result-btn btn btn-primary" onClick={() => handleAddToList(movies)}>
+                            Add to List
+                        </button>
+                    </div>
+                </div>
+                
+                ) : (
+                  <div className="no-movies">
+                    <div>
+                      Sorry! There are no movies matching your search request!
+                    </div>
+                  </div>
+                )}
+              </div>
+        </div>
         <div className="listContainer">
           <MovieList movieList={movieList} />
         </div>
-      </header>
     </div>
   );
 }

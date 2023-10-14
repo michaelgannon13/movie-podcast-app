@@ -52,7 +52,7 @@ function MovieList({ movieList }: MovieListProps) {
     }
 
     return (
-        <div className="movie-list">
+        <><h2 className='title'>Your Saved Movies</h2><div className="movie-list">
             {movieList.map((movie, index) => (
                 <div key={index} className="movie-item">
                     <img src={movie.Poster} alt={movie.Title} className="movie-image" />
@@ -62,15 +62,16 @@ function MovieList({ movieList }: MovieListProps) {
             <div className="genre-recommendation">
                 {highestGenre.count > 0 && (
                     <div>
+                        <h2 className='title'>Try this movie next!</h2>  
                         <p>
-                            You have selected {highestGenre.count} movie{highestGenre.count > 1 ? 's' : ''} 
-                            with the genre, {highestGenre.genre}. Because you like them, you might like these...
-                        </p>
-                        <p>Recommended Movie: {getRecommendations(highestGenre.genre)}</p>
+                            
+                            You have selected {highestGenre.count} movies with the genre, {highestGenre.genre}. Because you like them, you might like 
+
+                            {' ' + getRecommendations(highestGenre.genre)}</p>
                     </div>
                 )}
             </div>
-        </div>
+        </div></>
     );
 }
 

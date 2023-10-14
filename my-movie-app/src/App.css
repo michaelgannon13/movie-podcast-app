@@ -11,9 +11,22 @@
   text-align: left;
 }
 
+.result-btn {
+  width: 110px;
+}
+
+.card-title {
+  color: yellow;
+}
+
+
 .result-container {
-  background: #444444;
-  border: 1px solid #7d7d7d;
+  opacity: 0;  
+  transition: opacity 0.5s ease-in-out;  
+}
+
+.result-container.fade-in {
+  opacity: 1; 
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -22,7 +35,7 @@
   }
 }
 
-.App-header {
+.App {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -45,3 +58,4 @@
     transform: rotate(360deg);
   }
 }
+
