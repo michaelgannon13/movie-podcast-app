@@ -1,4 +1,5 @@
 export interface Movie {
+    id: number;
     Title: string;
     Year: string;
     Plot: string;
