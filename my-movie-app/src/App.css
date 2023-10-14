@@ -11,9 +11,22 @@
   text-align: left;
 }
 
+.container {
+  margin-top: 120px;
+}
+
+.add-to-list-btn {
+  width: 110px;
+  text-align: center;
+}
+
+.no-movies {
+  margin: 20px;
+}
+
 .result-container {
   background: #444444;
-  border: 1px solid #7d7d7d;
+  margin: 30px auto;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -22,7 +35,7 @@
   }
 }
 
-.App-header {
+.App {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
