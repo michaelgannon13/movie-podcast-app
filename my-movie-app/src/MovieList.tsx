@@ -1,55 +1,53 @@
+// MovieList.tsx
 import './MovieList.css';
 import { useEffect, useState } from 'react';
 import { MovieListProps } from './types';
 
 function MovieList({ movieList }: MovieListProps) {
-
-    const [highestGenre, setHighestGenre] = useState({ genre: '', count: 0 });
+    const [recommendation, setRecommendation] = useState<string | null>(null);
+    const apiKeyRecommend = process.env.REACT_APP_TMDB_API_KEY;
 
     useEffect(() => {
-        const genreCount: { [key: string]: number } = {};
-    
-        movieList.forEach(movie => {
-          movie.Genre.split(", ").forEach(genre => {
-            genreCount[genre] = (genreCount[genre] || 0) + 1;
-          });
-        });
-    
-        const maxGenre = Object.keys(genreCount).reduce((a, b) => genreCount[a] > genreCount[b] ? a : b, '');
-        
-        setHighestGenre({ genre: maxGenre, count: genreCount[maxGenre] });
-    
-      }, [movieList]);
+        if (movieList.length > 0) {
+            const movieTitle = movieList[0].Title;  // Assume the first movie's title represents the user's choice
+            fetchTmdbId(movieTitle);
+        }
+    }, [movieList]);
 
-    function getRecommendations(genre: string) {
-        const recommendations: { [key: string]: string } = {
-            Crime: 'The Godfather',
-            Romance: 'The Notebook',
-            Action: 'The Dark Knight',
-            Drama: 'Forrest Gump',
-            Comedy: 'Dumb and Dumber',
-            Thriller: 'Se7en',
-            Horror: 'The Shining',
-            Adventure: 'Indiana Jones and the Last Crusade',
-            SciFi: 'Interstellar',
-            Mystery: 'The Girl with the Dragon Tattoo',
-            Fantasy: 'The Lord of the Rings: The Fellowship of the Ring',
-            Animation: 'Toy Story',
-            Family: 'The Lion King',
-            Musical: 'The Sound of Music',
-            War: 'Saving Private Ryan',
-            Western: 'The Good, The Bad and The Ugly',
-            Biography: 'The Social Network',
-            History: 'Schindlers List',
-            Sport: 'Rocky',
-            Music: 'Whiplash',
-            Documentary: 'Blackfish',
-            Superhero: 'Avengers: Endgame',
-            Noir: 'Chinatown'
-        };
-        
-        return recommendations[genre as keyof typeof recommendations] || 'No recommendations available';
-    }
+    const fetchTmdbId = async (movieTitle: string) => {
+        try {
+            const response = await fetch(
+                `https://api.themoviedb.org/3/search/movie?api_key=${apiKeyRecommend}&query=${encodeURIComponent(movieTitle)}`
+            );
+            const data = await response.json();
+            if (data.results && data.results.length > 0) {
+                const tmdbId = data.results[0].id;
+                fetchRecommendation(tmdbId);
+            } else {
+                setRecommendation('No recommendations available');
+            }
+        } catch (error) {
+            console.error('Error fetching TMDB ID:', error);
+            setRecommendation('No recommendations available');
+        }
+    };
+
+    const fetchRecommendation = async (tmdbId: number) => {
+        try {
+            const response = await fetch(
+                `https://api.themoviedb.org/3/movie/${tmdbId}/similar?api_key=${apiKeyRecommend}`
+            );
+            const data = await response.json();
+            if (data.results && data.results.length > 0) {
+                setRecommendation(data.results[0].title);
+            } else {
+                setRecommendation('No recommendations available');
+            }
+        } catch (error) {
+            console.error('Error fetching recommendations:', error);
+            setRecommendation('No recommendations available');
+        }
+    };
 
     return (
         <div className="movie-list">
@@ -60,13 +58,9 @@ function MovieList({ movieList }: MovieListProps) {
             ))}
 
             <div className="genre-recommendation">
-                {highestGenre.count > 0 && (
+                {recommendation && (
                     <div>
-                        <p>
-                            You have selected {highestGenre.count} movie{highestGenre.count > 1 ? 's' : ''} 
-                            with the genre, {highestGenre.genre}. Because you like them, you might like these...
-                        </p>
-                        <p>Recommended Movie: {getRecommendations(highestGenre.genre)}</p>
+                        <p>Recommended Movie: {recommendation}</p>
                     </div>
                 )}
             </div>
@@ -75,6 +69,3 @@ function MovieList({ movieList }: MovieListProps) {
 }
 
 export default MovieList;
-
-export {};
-
