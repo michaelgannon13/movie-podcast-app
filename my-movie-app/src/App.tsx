@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import './App.css';
-import MovieList from './components/movies/list/MovieList';
 import Nav from './components/nav/Nav';
 import { Movie } from './types';
 import MovieRecommendation from './components/movies/recommendation/MovieRecommendation';
@@ -14,14 +13,13 @@ function App() {
   const [recommendation, setRecommendation] = useState<string | null>(null);
   const apiKeyRecommend = process.env.REACT_APP_TMDB_API_KEY;
 
-
   // Check local storage for movies
   const savedMoviesJSON = localStorage.getItem('movieList');
   const savedMovies = savedMoviesJSON ? JSON.parse(savedMoviesJSON) : [];
   const [movieList, setMovieList] = useState(savedMovies);
   const [errorMsg, setErrorMsg] = useState(false);
-
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
+  const MovieList = React.lazy(() => import('./components/movies/list/MovieList'));
 
   useEffect(() => {
     if (movieList.length > 0) {
@@ -184,7 +182,10 @@ const fetchRecommendation = async (tmdbId: number) => {
 
       <div className="container">
         <div className="listContainer">
-          <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
+          {/* Lazy loading */}
+          <Suspense fallback={<div>Loading Movie List...</div>}>
+            <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
+          </Suspense>
           {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
         </div>
       </div>
