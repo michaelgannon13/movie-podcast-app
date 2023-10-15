@@ -5,6 +5,7 @@ import MovieList from './components/movies/list/MovieList';
 import Nav from './components/nav/Nav';
 import { Movie } from './types';
 import MovieRecommendation from './components/movies/recommendation/MovieRecommendation';
+import MovieCard from './components/movies/card/MovieCard';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -168,22 +169,11 @@ const fetchRecommendation = async (tmdbId: number) => {
 
           <div className='result-container'>
             {movies?.Title ? (
-                  <div className="movie-card d-flex flex-row mb-4">
-                  <div className="movie-image flex-shrink-0 m-3">
-                      <img src={movies.Poster} alt={movies.Title} className="img-fluid" />
-                  </div>
-                  <div className="card-body d-flex flex-column justify-content-center">
-                      <h5 className="card-title mb-2">{movies.Title}</h5>
-                      <p className="card-text mb-2">
-                          <strong>Release Year:</strong> {movies.Year}<br />
-                          <strong>Release Date:</strong> {movies.Released}<br />
-                          <strong>Plot:</strong> {movies.Plot !== "N/A" ? movies.Plot : "No plot available"}
-                      </p>
-                      <button className="btn btn-primary add-to-list-btn" onClick={() => handleAddToList(movies)}>
-                          Add to List
-                      </button>
-                  </div>
-              </div>
+              <MovieCard movie={movies} customClass="d-flex flex-row mb-4" showDetails={true}>
+                <button className="btn btn-primary add-to-list-btn" onClick={() => handleAddToList(movies)}>
+                    Add to List
+                </button>
+              </MovieCard>
               ) : (
                 <div className="no-movies">
                   {errorMsg ? <div className="no-movies">Sorry! There are no movies matching your search request!</div> : null}

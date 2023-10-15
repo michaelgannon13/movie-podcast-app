@@ -13,6 +13,19 @@ export interface MovieListProps {
     onRemoveMovie: (movie: Movie) => void;
 }
 
+export interface MovieCardProps {
+    movie: {
+        Title: string,
+        Year: string,
+        Released: string,
+        Plot: string,
+        Poster: string,
+      },
+      customClass?: string,
+      children?: React.ReactNode,
+      showDetails?: boolean,
+}
+
 export interface SearchProps {
     searchTerm: string;
     setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
