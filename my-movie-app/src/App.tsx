@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import './App.css';
 import Nav from './components/nav/Nav';
 import { Movie } from './types';
 import MovieRecommendation from './components/movies/recommendation/MovieRecommendation';
 import MovieCard from './components/movies/card/MovieCard';
+import ErrorModal from './components/error/Modal';
+
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,6 +22,8 @@ function App() {
   const [errorMsg, setErrorMsg] = useState(false);
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
   const MovieList = React.lazy(() => import('./components/movies/list/MovieList'));
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     if (movieList.length > 0) {
@@ -78,22 +82,25 @@ const fetchRecommendation = async (tmdbId: number) => {
 };
 
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-  };
+  }, []);
 
-  const handleClearList = () => {
+
+  const handleClearList = useCallback(() => {
+      setErrorMsg(false);
       setMovieList([]);
       localStorage.removeItem('movieList');
-  };
+  }, []);
 
+  const handleAddToList = useCallback((movie: Movie) => {
+    const isDuplicate = movieList.some(
+        (existingMovie: { Title: string }) => existingMovie.Title === movie.Title
+    );
 
-  const handleAddToList = (movie: Movie) => {
-    // Check if movie already exists in the list
-    const isDuplicate = movieList.some((existingMovie: { Title: string; }) => existingMovie.Title === movie.Title);
-    
     if (isDuplicate) {
-        alert('This movie is already in your list');
+        setModalMessage('This movie already exists in your list');
+        setShowErrorModal(true);
         return;
     }
 
@@ -102,35 +109,37 @@ const fetchRecommendation = async (tmdbId: number) => {
         setMovieList(updatedMovieList);
         localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
     } else {
-        alert('You can only add 10 movies to your list');
+      setModalMessage('You can only add 10 movies to your list');
+      setShowErrorModal(true);
     }
-};
+}, [movieList]);
 
-  const handleRemoveMovie = (movie: Movie) => {
-      const updatedMovieList = movieList.filter((m: Movie) => m.Title !== movie.Title);
-      setMovieList(updatedMovieList);
-      localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
-  };
+
+const handleRemoveMovie = useCallback((movie: Movie) => {
+  const updatedMovieList = movieList.filter((m: Movie) => m.Title !== movie.Title);
+  setMovieList(updatedMovieList);
+  localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
+}, [movieList]);
+
 
   // Sync movieList state with local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('movieList', JSON.stringify(movieList));
   }, [movieList]);
 
-  const handleSearchClick = async () => {
-    if (searchTerm !== '') {
-      if (apiKey) { 
+  const handleSearchClick = useCallback(async () => {
+    if (searchTerm !== '' && apiKey) {
         try {
-          const data = await fetchMovie(searchTerm, apiKey);
-          setMovies(data);
+            const data = await fetchMovie(searchTerm, apiKey);
+            setMovies(data);
         } catch (error) {
-          setError('There has been a problem with your fetch operation: ' + error);
+            setError('There has been a problem with your fetch operation: ' + error);
         }
-      } else {
-        setError('API key is not defined');
-      }
+    } else {
+        setError('Search term or API key is not defined');
     }
-  };
+}, [searchTerm, apiKey]);
+
   return (
     <div className="App">
       <Nav />
@@ -138,12 +147,14 @@ const fetchRecommendation = async (tmdbId: number) => {
           <div className="row">
             <div className="col-md-6 offset-md-3">
               <div className="input-group mb-3">
+                <label htmlFor="movie-search" className="visually-hidden">Search for movies</label>
                 <input 
                   type="text" 
                   className="form-control" 
                   placeholder="Search for movies..." 
                   value={searchTerm}
                   onChange={handleSearchChange}
+                  id="movie-search"
                 />
               </div>
                 <div className="input-group-append">
@@ -165,7 +176,7 @@ const fetchRecommendation = async (tmdbId: number) => {
             </div>
           </div>
 
-          <div className='result-container'>
+          <div className='result-container' aria-live="polite">
             {movies?.Title ? (
               <MovieCard movie={movies} customClass="d-flex flex-row mb-4" showDetails={true}>
                 <button className="btn btn-primary add-to-list-btn" onClick={() => handleAddToList(movies)}>
@@ -173,8 +184,9 @@ const fetchRecommendation = async (tmdbId: number) => {
                 </button>
               </MovieCard>
               ) : (
-                <div className="no-movies">
-                  {errorMsg ? <div className="no-movies">Sorry! There are no movies matching your search request!</div> : null}
+                <div className='no-movies'>
+                  {
+                  errorMsg ? <div className="alert alert-danger" role="alert">Sorry! There are no movies matching your search request!</div> : null}
                 </div>
               )}
           </div>
@@ -182,13 +194,17 @@ const fetchRecommendation = async (tmdbId: number) => {
 
       {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
 
-
       <div className="container movie-list-container">
           {/* Lazy loading */}
           <Suspense fallback={<div>Loading Movie List...</div>}>
             <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
           </Suspense>
       </div>
+      <ErrorModal 
+          show={showErrorModal} 
+          message={modalMessage}
+          onHide={() => setShowErrorModal(false)} 
+      />
     </div>
   );
 }

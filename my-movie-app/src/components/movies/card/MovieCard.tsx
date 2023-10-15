@@ -1,6 +1,6 @@
 import React from 'react';
 import { MovieCardProps } from '../../../types';
-import './MovieCard.css';  // Import the CSS file
+import './MovieCard.css'; 
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie, customClass, showDetails, children }) => {
     if (!movie) {
