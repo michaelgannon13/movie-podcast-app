@@ -15,6 +15,10 @@
   margin-top: 120px;
 }
 
+.container.movie-list-container {
+  margin-top: 20px;
+}
+
 .add-to-list-btn {
   width: 110px;
   text-align: center;
