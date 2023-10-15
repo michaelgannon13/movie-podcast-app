@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { CSSTransition } from 'react-transition-group';
 import './MovieRecommendation.css';
 
 function MovieRecommendation(recommendation: any) {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    setShow(prevShow => !prevShow);  // Toggle the show state whenever a new recommendation is received
+    setShow(prevShow => !prevShow);  
   }, [recommendation]);
 
   return (
-    <div className="genre-recommendation">
+    <div>
       {recommendation.recommendation && (
-        <CSSTransition
-          in={show}
-          timeout={300}
-          classNames="fade"
-          appear
-        >
-          <div>
-            <p>Recommended Movie: {recommendation.recommendation}</p>
+          <div className="alert alert-info recommendation" role="alert">
+            <span>Recommended Movie: {recommendation.recommendation}</span>
           </div>
-        </CSSTransition>
       )}
     </div>
   );

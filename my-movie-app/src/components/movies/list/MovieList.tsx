@@ -50,9 +50,6 @@ function MovieList({ movieList, onRemoveMovie }: MovieListProps) {
         }
     };
 
-    const handleRemoveMovie = (movie: Movie) => {
-        onRemoveMovie(movie);
-    };
 
     return (
         <div className="movie-list">
