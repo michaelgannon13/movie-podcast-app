@@ -2,7 +2,6 @@
 import './MovieList.css';
 import { useEffect, useState } from 'react';
 import { MovieListProps } from '../../../types';
-import MovieRecommendation from '../recommendation/MovieList';
 
 function MovieList({ movieList }: MovieListProps) {
     const [recommendation, setRecommendation] = useState<string | null>(null);
@@ -51,15 +50,13 @@ function MovieList({ movieList }: MovieListProps) {
     };
 
     return (
-        <div className="movie-list">
-            {movieList.map((movie, index) => (
-                <div key={index} className="movie-item">
-                    <img src={movie.Poster} alt={movie.Title} className="movie-image" />
-                </div>
-            ))}
-
-            <MovieRecommendation recommendation={recommendation} />
-        </div>
+<div className="movie-list">
+        {movieList.map((movie, index) => (
+            <div key={index} className="movie-item">
+                <img src={movie.Poster} alt={movie.Title} className="movie-image" />
+            </div>
+        ))}
+    </div>
     );
 }
 

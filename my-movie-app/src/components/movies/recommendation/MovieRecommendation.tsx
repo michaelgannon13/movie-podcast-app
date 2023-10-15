@@ -2,7 +2,6 @@
 function MovieRecommendation( recommendation: any ) {
 
     return (
-
             <div className="genre-recommendation">
             {recommendation.recommendation && (
                 <div>

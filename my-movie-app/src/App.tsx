@@ -4,11 +4,15 @@ import './App.css';
 import MovieList from './components/movies/list/MovieList';
 import Nav from './components/nav/Nav';
 import { Movie } from './types';
+import MovieRecommendation from './components/movies/recommendation/MovieRecommendation';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [movies, setMovies] = useState<Movie>();
   const [error, setError] = useState<string | null>(null);
+  const [recommendation, setRecommendation] = useState<string | null>(null);
+  const apiKeyRecommend = process.env.REACT_APP_TMDB_API_KEY;
+
 
   // Check local storage for movies
   const savedMoviesJSON = localStorage.getItem('movieList');
@@ -17,6 +21,15 @@ function App() {
   const [errorMsg, setErrorMsg] = useState(false);
 
   const apiKey = process.env.REACT_APP_OMDB_API_KEY;
+
+  useEffect(() => {
+    if (movieList.length > 0) {
+      // Get the title of the last movie added to the list
+      const movieTitle = movieList[movieList.length - 1].Title;
+      fetchTmdbId(movieTitle);
+    }
+  }, [movieList]);
+  
 
   const fetchMovie = async (searchTerm: string, apiKey: string) => {
     const response = await fetch(`https://www.omdbapi.com/?t=${searchTerm}&apikey=${apiKey}`);
@@ -29,6 +42,41 @@ function App() {
     }
     return data;
   };
+
+  const fetchTmdbId = async (movieTitle: string) => {
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${apiKeyRecommend}&query=${encodeURIComponent(movieTitle)}`
+        );
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            const tmdbId = data.results[0].id;
+            fetchRecommendation(tmdbId);
+        } else {
+            setRecommendation('No recommendations available');
+        }
+    } catch (error) {
+        console.error('Error fetching TMDB ID:', error);
+        setRecommendation('No recommendations available');
+    }
+};
+
+const fetchRecommendation = async (tmdbId: number) => {
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${tmdbId}/similar?api_key=${apiKeyRecommend}`
+        );
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+            setRecommendation(data.results[0].title);
+        } else {
+            setRecommendation('No recommendations available');
+        }
+    } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        setRecommendation('No recommendations available');
+    }
+};
 
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,8 +164,12 @@ function App() {
               )}
           </div>
       </div>
-      <div className="listContainer">
-        <MovieList movieList={movieList} />
+
+      <div className="container">
+        <div className="listContainer">
+          <MovieList movieList={movieList} />
+          <MovieRecommendation recommendation={recommendation} />
+        </div>
       </div>
     </div>
   );
