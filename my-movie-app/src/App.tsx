@@ -180,14 +180,14 @@ const fetchRecommendation = async (tmdbId: number) => {
           </div>
       </div>
 
-      <div className="container">
-        <div className="listContainer">
+      {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
+
+
+      <div className="container movie-list-container">
           {/* Lazy loading */}
           <Suspense fallback={<div>Loading Movie List...</div>}>
             <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
           </Suspense>
-          {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
-        </div>
       </div>
     </div>
   );
