@@ -84,13 +84,27 @@ const fetchRecommendation = async (tmdbId: number) => {
   };
 
   const handleAddToList = (movie: Movie) => {
+    // Check if movie already exists in the list
+    const isDuplicate = movieList.some((existingMovie: { Title: string; }) => existingMovie.Title === movie.Title);
+    
+    if (isDuplicate) {
+        alert('This movie is already in your list');
+        return;
+    }
+
     if (movieList.length < 10) {
-      const updatedMovieList = [...movieList, movie];
+        const updatedMovieList = [...movieList, movie];
+        setMovieList(updatedMovieList);
+        localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
+    } else {
+        alert('You can only add 10 movies to your list');
+    }
+};
+
+  const handleRemoveMovie = (movie: Movie) => {
+      const updatedMovieList = movieList.filter((m: Movie) => m.Title !== movie.Title);
       setMovieList(updatedMovieList);
       localStorage.setItem('movieList', JSON.stringify(updatedMovieList));
-    } else {
-      alert('You can only add 10 movies to your list')
-    }
   };
 
   // Sync movieList state with local storage whenever it changes
@@ -167,7 +181,7 @@ const fetchRecommendation = async (tmdbId: number) => {
 
       <div className="container">
         <div className="listContainer">
-          <MovieList movieList={movieList} />
+          <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
           <MovieRecommendation recommendation={recommendation} />
         </div>
       </div>
