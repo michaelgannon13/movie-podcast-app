@@ -10,6 +10,7 @@ export interface Movie {
 
 export interface MovieListProps {
     movieList: Movie[];
+    onRemoveMovie: (movie: Movie) => void;
 }
 
 export interface SearchProps {
