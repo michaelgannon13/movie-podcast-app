@@ -83,6 +83,12 @@ const fetchRecommendation = async (tmdbId: number) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleClearList = () => {
+      setMovieList([]);
+      localStorage.removeItem('movieList');
+  };
+
+
   const handleAddToList = (movie: Movie) => {
     // Check if movie already exists in the list
     const isDuplicate = movieList.some((existingMovie: { Title: string; }) => existingMovie.Title === movie.Title);
@@ -143,12 +149,19 @@ const fetchRecommendation = async (tmdbId: number) => {
               </div>
                 <div className="input-group-append">
                   <button 
-                    className="btn btn-outline-secondary" 
+                    className="btn btn-primary me-2" 
                     type="button"
                     onClick={handleSearchClick}
                   >
                     Search
                   </button>
+                  <button 
+                    className="btn btn-danger me-2" 
+                    type="button"
+                    onClick={handleClearList}
+                >
+                    Clear List
+                </button>
                 </div>
             </div>
           </div>
@@ -182,7 +195,7 @@ const fetchRecommendation = async (tmdbId: number) => {
       <div className="container">
         <div className="listContainer">
           <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
-          <MovieRecommendation recommendation={recommendation} />
+          {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
         </div>
       </div>
     </div>
