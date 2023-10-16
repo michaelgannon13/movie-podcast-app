@@ -13,21 +13,21 @@ function App() {
   const [movies, setMovies] = useState<Movie>();
   const [error, setError] = useState<string | null>(null);
   const [recommendation, setRecommendation] = useState<string | null>(null);
+
   const apiKeyRecommend = process.env.REACT_APP_TMDB_API_KEY;
+  const apiKey = process.env.REACT_APP_OMDB_API_KEY;
 
   // Check local storage for movies
   const savedMoviesJSON = localStorage.getItem('movieList');
   const savedMovies = savedMoviesJSON ? JSON.parse(savedMoviesJSON) : [];
   const [movieList, setMovieList] = useState(savedMovies);
   const [errorMsg, setErrorMsg] = useState(false);
-  const apiKey = process.env.REACT_APP_OMDB_API_KEY;
   const MovieList = React.lazy(() => import('./components/movies/list/MovieList'));
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
 
   useEffect(() => {
     if (movieList.length > 0) {
-      // Get the title of the last movie added to the list
       const movieTitle = movieList[movieList.length - 1].Title;
       fetchTmdbId(movieTitle);
     }
@@ -195,7 +195,6 @@ const handleRemoveMovie = useCallback((movie: Movie) => {
       {movieList.length > 0 ? <MovieRecommendation recommendation={recommendation} /> : null}
 
       <div className="container movie-list-container">
-          {/* Lazy loading */}
           <Suspense fallback={<div>Loading Movie List...</div>}>
             <MovieList movieList={movieList} onRemoveMovie={handleRemoveMovie} />
           </Suspense>
